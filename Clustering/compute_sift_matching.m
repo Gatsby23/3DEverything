@@ -1,4 +1,4 @@
-function compute_sift_matching
+function compute_sift_matching(index)
 
 matlabpool open;
 
@@ -9,35 +9,37 @@ object = load('sift_features/filenames.mat');
 filenames = object.filenames;
 
 N = numel(filenames);
-similarity = zeros(N, N);
-parfor i = 1:N
-    tic;
-    fprintf('%d\n', i);
+parfor i = 1:numel(index)
+    ind = index(i);
+    fprintf('%d\n', ind);
+    similarity = zeros(1, N);
     % load descriptor
-    object = load(sprintf('sift_features/%s.mat', filenames{i}));
+    object = load(sprintf('sift_features/%s.mat', filenames{ind}), 'descriptors');
     des1 = object.descriptors;
     n = size(des1,1);
-    if n == 0
-        continue;
+    if n ~= 0
+        for j = 1:N
+            % load descriptor
+            object = load(sprintf('sift_features/%s.mat', filenames{j}), 'descriptors');
+            des2 = object.descriptors;
+
+            % sift matching
+            if size(des2,1) < 2
+                num = 0;
+            else
+                M = sort(acos(des1 * des2'), 2);
+                num = sum(M(:,1) < distRatio * M(:,2));
+            end        
+
+            similarity(j) = num / n;
+        end
     end
-    for j = 1:N
-        % load descriptor
-        object = load(sprintf('sift_features/%s.mat', filenames{j}));
-        des2 = object.descriptors;
-        
-        % sift matching
-        if size(des2,1) < 2
-            num = 0;
-        else
-            M = sort(acos(des1 * des2'), 2);
-            num = sum(M(:,1) < distRatio * M(:,2));
-        end        
-        
-        similarity(i,j) = num / n;
-    end
-    toc;
+    
+    parsave(sprintf('sift_matching/%s_sim.mat', filenames{ind}), similarity);
 end
 
-save('similarity.mat', 'similarity', '-v7.3');
-
 matlabpool close;
+
+function parsave(filename, similarity)
+
+save(filename, 'similarity');
