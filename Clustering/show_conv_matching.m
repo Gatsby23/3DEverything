@@ -14,7 +14,7 @@ similarity_all = object.similarity;
 mplot = 5;
 nplot = 10;
 index_plot = 0;
-for i = 1:N
+for i = 4969:N
     % read image
     filename = sprintf('../Images/%s/%s.JPG', cls, filenames{i});
     I = imread(filename);
