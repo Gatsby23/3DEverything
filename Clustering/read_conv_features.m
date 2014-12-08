@@ -1,6 +1,6 @@
-function features = read_conv_features
+function features = read_conv_features(cls)
 
-filename = 'features.dat';
+filename = sprintf('features_%s.dat', cls);
 fid = fopen(filename, 'r');
 features = fread(fid, 'float32');
 

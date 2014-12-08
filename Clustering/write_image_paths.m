@@ -1,14 +1,14 @@
 function write_image_paths
 
-cls = 'chair';
+cls = 'table';
 root_dir = '/home/yuxiang/Projects/3DEverything';
 
 % load filenames
-object = load('sift_features/filenames.mat');
+object = load(sprintf('filenames_%s.mat', cls));
 filenames = object.filenames;
 N = numel(filenames);
 
-fid = fopen('image_paths.txt', 'w');
+fid = fopen(sprintf('image_paths_%s.txt', cls), 'w');
 for i = 1:N
     filename = fullfile(root_dir, sprintf('Images/%s/%s.JPG', cls, filenames{i}));
     fprintf(fid, '%s\n', filename);

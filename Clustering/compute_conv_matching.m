@@ -1,6 +1,8 @@
 function compute_conv_matching
 
-features = read_conv_features;
+cls = 'table';
+
+features = read_conv_features(cls);
 N = size(features, 2);
 similarity = zeros(N, N);
 
@@ -15,4 +17,4 @@ for i = 1:N
     end
 end
 
-save('similarity_conv.mat', 'similarity', '-v7.3');
+save(sprintf('similarity_conv_%s.mat', cls), 'similarity', '-v7.3');

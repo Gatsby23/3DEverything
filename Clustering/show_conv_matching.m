@@ -3,18 +3,18 @@ function show_conv_matching
 cls = 'chair';
 
 % load filenames
-object = load('sift_features/filenames.mat');
+object = load(sprintf('filenames_%s.mat', cls));
 filenames = object.filenames;
 N = numel(filenames);
 
 % load similarity
-object = load('similarity_conv.mat');
+object = load(sprintf('similarity_conv_%s.mat', cls));
 similarity_all = object.similarity;
 
 mplot = 5;
 nplot = 10;
 index_plot = 0;
-for i = 4969:N
+for i = 1:N
     % read image
     filename = sprintf('../Images/%s/%s.JPG', cls, filenames{i});
     I = imread(filename);

@@ -1,7 +1,9 @@
-function cluster_images 
+function cluster_images
+
+cls = 'table';
 
 fprintf('load similarity scores from file\n');
-object = load('similarity_conv.mat');
+object = load(sprintf('similarity_conv_%s.mat', cls));
 scores = object.similarity;
 
 pscale = 1.5;
@@ -15,4 +17,4 @@ fprintf('Start AP clustering\n');
 fprintf('Number of clusters: %d\n', length(unique(idx_ap)));
 fprintf('Fitness (net similarity): %f\n', netsim);
 
-save('idx_ap.mat', 'idx_ap');
+save(sprintf('idx_ap_%s.mat', cls), 'idx_ap');

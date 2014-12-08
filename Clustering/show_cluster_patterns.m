@@ -1,14 +1,14 @@
 function show_cluster_patterns
 
-cls = 'chair';
+cls = 'table';
 is_save = 0;
 
 % load filenames
-object = load('sift_features/filenames.mat');
+object = load(sprintf('filenames_%s.mat', cls));
 filenames = object.filenames;
 
 % load idx
-object = load('idx_ap.mat');
+object = load(sprintf('idx_ap_%s.mat', cls));
 idx = object.idx_ap;
 
 % cluster centers

@@ -8,7 +8,7 @@ filenames = object.filenames;
 N = numel(filenames);
 
 mplot = 5;
-nplot = 5;
+nplot = 10;
 index_plot = 0;
 for i = 1:N
     % read image

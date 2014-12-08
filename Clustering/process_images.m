@@ -1,6 +1,6 @@
 function process_images
 
-cls = 'chair';
+cls = 'table';
 root_dir = '/home/yuxiang/Projects/3DEverything';
 filename = sprintf('%s/Images/%s/*.JPG', root_dir, cls);
 files = dir(filename);
