@@ -5,7 +5,8 @@ function visualizeHOG(w)
 
 % make pictures of positive and negative weights
 bs = 20;
-w = w(:,:,1:9);
+% w = w(:,:,1:9);
+w = w(:,:,19:27);
 scale = max(max(w(:)),max(-w(:)));
 pos = HOGpicture(w, bs) * 255/scale;
 neg = HOGpicture(-w, bs) * 255/scale;

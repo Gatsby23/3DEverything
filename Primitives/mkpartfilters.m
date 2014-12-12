@@ -69,9 +69,11 @@ for j = 1:retries
   covered = 0;
   energy = sum(max(filter2x, 0).^2, 3);
   for i = 1:num
-    covered = covered + ...
-              coveredenergy(energy, tmp(i).anchor(1)+1, ...
+      covered_energy = coveredenergy(energy, tmp(i).anchor(1)+1, ...
                                     tmp(i).anchor(2)+1, template);
+    tmp(i).energy = covered_energy;
+    covered = covered + covered_energy;
+
     energy = zeroenergy(energy, tmp(i).anchor(1)+1, ...
                                 tmp(i).anchor(2)+1, template);
   end
