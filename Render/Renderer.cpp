@@ -176,14 +176,24 @@ bool Renderer::initialize(std::vector<std::string> fileNames,
   	for(int modelIndex = 0; modelIndex < loadedModels.size(); modelIndex++){
         sceneRoot->addChild(loadedModels[modelIndex]);
     }
+
+    // osg::ref_ptr<osg::ShadeModel> shadeModel = new osg::ShadeModel(osg::ShadeModel::FLAT);
+    // sceneRoot->getOrCreateStateSet()->setAttributeAndModes(shadeModel.get(),osg::StateAttribute::ON);
+    // osg::ref_ptr<osg::LightModel> lightModel = new osg::LightModel;
+    // lightModel->setTwoSided(true);
+    // lightModel->setColorControl(osg::LightModel::SINGLE_COLOR);
+    // lightModel->setAmbientIntensity(osg::Vec4(0.2f,0.2f,0.2f,1.0f));
+    // lightModel->setLocalViewer(false);  
+    // sceneRoot->getOrCreateStateSet()->setAttributeAndModes(lightModel.get());
   
   	//	osg::ref_ptr<osg::Light> light = new osg::Light;
   	//	osg::ref_ptr<osg::LightSource> lightSource = new osg::LightSource;
+  	//	light->setPosition(osg::Vec4(1.0,1.0,1.0,0.0));
   	//	light->setAmbient(osg::Vec4(1.0,1.0,1.0,1.0));
   	//	light->setDiffuse(osg::Vec4(1.0,1.0,1.0,1.0));
   	//	light->setSpecular(osg::Vec4(1,1,1,1));
   	//	lightSource->setLight(light.get());
-  	//	root->addChild(lightSource.get());
+  	//	sceneRoot->addChild(lightSource.get());
   
   	viewer->setSceneData( sceneRoot.get() );
   

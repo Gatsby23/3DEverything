@@ -15,7 +15,7 @@ pnum = 32;
 threshold = 0.3;
 padding = 16;
 
-cls = 'bicycle';
+cls = 'chair';
 index = 1;
 
 filename = sprintf('CAD/%s/%02d.obj', cls, index);
@@ -39,12 +39,9 @@ for azimuth = 0:15:345
     
     % compute normals
     P = renderer.getProjectionMatrix();
-    fx = P(1,1);
-    fy = P(2,2);
-    cx = -P(1,3) + padding;
-    cy = -P(2,3) + padding;
-    params = [fx, fy, cx, cy]; 
-    [Nx,Ny,Nz,valid] = computeNormals(depth(end:-1:1,:), params);
+    P(1,3) = P(1,3) - padding;
+    P(2,3) = P(2,3) - padding;
+    [Nx,Ny,Nz,valid] = computeNormals(depth(end:-1:1,:), P);
     normalMap(:,:,1) = Nx;
     normalMap(:,:,2) = Ny;
     normalMap(:,:,3) = Nz;
@@ -70,21 +67,21 @@ for azimuth = 0:15:345
     axis off;
     hold on;
     % show HOG and placement
-    for i = 1:pnum
-        if pfilters(i).energy < threshold
-            break;
-        end
-        anchor = pfilters(i).anchor;
-        x = (anchor(1)+2) * sbin + sbin/2;
-        y = (anchor(2)+2) * sbin + sbin/2;
-        plot(x, y, 'bo', 'LineWidth', 2);
-        w = psize(1)*sbin;
-        h = psize(2)*sbin;
-        bbox = [x-w/2 y-h/2 w h];
-        rectangle('Position', bbox, 'EdgeColor', 'r', 'LineWidth', 2);
-        % text(bbox(1), bbox(2), num2str(i), 'BackgroundColor',[.7 .9 .7]);
-    end
-    hold off;
+%     for i = 1:pnum
+%         if pfilters(i).energy < threshold
+%             break;
+%         end
+%         anchor = pfilters(i).anchor;
+%         x = (anchor(1)+2) * sbin + sbin/2;
+%         y = (anchor(2)+2) * sbin + sbin/2;
+%         plot(x, y, 'bo', 'LineWidth', 2);
+%         w = psize(1)*sbin;
+%         h = psize(2)*sbin;
+%         bbox = [x-w/2 y-h/2 w h];
+%         rectangle('Position', bbox, 'EdgeColor', 'r', 'LineWidth', 2);
+%         % text(bbox(1), bbox(2), num2str(i), 'BackgroundColor',[.7 .9 .7]);
+%     end
+%     hold off;
     
     % plot normals
     subplot(mplot, nplot, index_plot);
@@ -106,7 +103,7 @@ for azimuth = 0:15:345
     end
     hold off;
     axis equal;
-    axis off;    
+    axis off;
     
     % plot HOG
     subplot(mplot, nplot, index_plot);

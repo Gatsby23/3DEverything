@@ -13,7 +13,7 @@ distance = 0; fieldOfView = 25;
 cls = 'chair';
 N = 10;
 
-for i = 2:N
+for i = 1:N
     filename = sprintf('CAD/%s/%02d.obj', cls, i);
     % Setup Renderer
     renderer = Renderer();
@@ -44,7 +44,7 @@ for i = 2:N
     %     axis off;
     %     colormap hot;
 
-        P = renderer.getProjectionMatrix();
+        P = renderer.getProjectionMatrix();       
         [Nx,Ny,Nz,valid] = computeNormals(depth(end:-1:1,:), P);
         normalMap(:,:,1) = Nx;
         normalMap(:,:,2) = Ny;

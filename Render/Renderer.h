@@ -22,6 +22,7 @@
 #include <osgGA/TrackballManipulator>
 #include <osg/ComputeBoundsVisitor>
 #include <osg/MatrixTransform>
+#include <osg/LightModel>
 #include <osgUtil/Optimizer>
 #include <osgUtil/SmoothingVisitor>
 #include <mexplus.h>

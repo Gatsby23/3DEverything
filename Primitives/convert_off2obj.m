@@ -1,7 +1,7 @@
 function convert_off2obj
 
-cls = 'bicycle';
-N = 6;
+cls = 'car';
+N = 1;
 
 for i = 1:N
     file_off = sprintf('CAD/%s/%02d.off', cls, i);
