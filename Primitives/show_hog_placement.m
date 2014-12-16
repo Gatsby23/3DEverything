@@ -12,11 +12,11 @@ distance = 0; fieldOfView = 25;
 sbin = 8;
 psize = [4 4];
 pnum = 32;
-threshold = 0.3;
+threshold = 0.5;
 padding = 16;
 
-cls = 'chair';
-index = 1;
+cls = 'car';
+index = 2;
 
 filename = sprintf('CAD/%s/%02d.obj', cls, index);
 % Setup Renderer
@@ -26,8 +26,8 @@ if ~renderer.initialize({filename}, ...
     error('Renderer initilization failed');
 end
 
-mplot = 1;
-nplot = 3;
+mplot = 2;
+nplot = 2;
 index_plot = 1;
 for azimuth = 0:15:345
     % rendering
@@ -41,14 +41,24 @@ for azimuth = 0:15:345
     P = renderer.getProjectionMatrix();
     P(1,3) = P(1,3) - padding;
     P(2,3) = P(2,3) - padding;
-    [Nx,Ny,Nz,valid] = computeNormals(depth(end:-1:1,:), P);
+    [Nx, Ny, Nz, Xd, Yd, Zd, valid] = computeNormals(depth(end:-1:1,:), P);
     normalMap(:,:,1) = Nx;
     normalMap(:,:,2) = Ny;
     normalMap(:,:,3) = Nz;
-    normals = visualizeNormal(normalMap, valid);    
+    normals = visualizeNormal(normalMap, valid);
+    
+    % compute gray image from normals
+    gray = rgb2gray(normals);
+    
+    num = sum(sum(valid));
+    pointMap = [];
+    pointMap(:,1) = reshape(Xd(valid), num, 1);
+    pointMap(:,2) = reshape(Yd(valid), num, 1);
+    pointMap(:,3) = reshape(Zd(valid), num, 1);
     
     % compute HOG
-    f = features(double(rendering), sbin);
+    I = repmat(gray, [1 1 3]);
+    f = features(double(I), sbin);
     % compute HOG placement
     pfilters = mkpartfilters(f(:,:,19:27), psize, pnum);
     % sort the placement
@@ -62,7 +72,7 @@ for azimuth = 0:15:345
     % show rendering image
     subplot(mplot, nplot, index_plot);
     index_plot = index_plot + 1;
-    imagesc(rendering);
+    imagesc(gray);
     axis equal;
     axis off;
     hold on;
@@ -104,6 +114,36 @@ for azimuth = 0:15:345
     hold off;
     axis equal;
     axis off;
+    
+    % plot 3D points
+    subplot(mplot, nplot, index_plot);
+    index_plot = index_plot + 1;
+    plot3(pointMap(:,1), pointMap(:,2), pointMap(:,3), 'o');
+    axis equal;
+    xlabel('x');
+    ylabel('y');
+    zlabel('z');
+    view(0, -90);
+    
+    % Normal vector points
+    xc = pointMap(:,1);
+    yc = pointMap(:,2);
+    zc = pointMap(:,3);
+    nx = reshape(Nx(valid), num, 1);
+    ny = reshape(Ny(valid), num, 1);
+    nz = reshape(Nz(valid), num, 1);
+    Sx = 0.1;
+    Sy = 0.1;
+    Sz = 0.1;
+   
+    hold on;
+    % use nan trick here
+    xp = [xc(:) Sx*nx(:)+xc(:) repmat(nan,[numel(xc) 1])]';
+    yp = [yc(:) Sy*ny(:)+yc(:) repmat(nan,[numel(xc) 1])]';
+    zp = [zc(:) Sz*nz(:)+zc(:) repmat(nan,[numel(xc) 1])]';
+   
+    plot3(xp(:), yp(:), zp(:), 'r-');
+    hold off;
     
     % plot HOG
     subplot(mplot, nplot, index_plot);

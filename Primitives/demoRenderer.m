@@ -11,7 +11,8 @@ elevation = 15; yaw = 0;
 distance = 0; fieldOfView = 25;
 
 cls = 'chair';
-N = 10;
+files = dir(sprintf('CAD/%s/*.obj', cls));
+N = numel(files);
 
 for i = 1:N
     filename = sprintf('CAD/%s/%02d.obj', cls, i);
@@ -31,12 +32,6 @@ for i = 1:N
         renderer.setViewpoint(360 - azimuth, elevation, yaw, distance, fieldOfView);
         [rendering, depth]= renderer.render();
 
-        subplot(mplot, nplot, index_plot);
-        index_plot = index_plot + 1;
-        imagesc(rendering);
-        axis equal;
-        axis off;
-
     %     subplot(mplot, nplot, index_plot);
     %     index_plot = index_plot + 1;
     %     imagesc(depth(end:-1:1,:));
@@ -45,11 +40,21 @@ for i = 1:N
     %     colormap hot;
 
         P = renderer.getProjectionMatrix();       
-        [Nx,Ny,Nz,valid] = computeNormals(depth(end:-1:1,:), P);
+        [Nx,Ny,Nz,Xd, Yd, Zd, valid] = computeNormals(depth(end:-1:1,:), P);
         normalMap(:,:,1) = Nx;
         normalMap(:,:,2) = Ny;
         normalMap(:,:,3) = Nz;
         normals = visualizeNormal(normalMap, valid);
+        
+        % compute gray image from normals
+        gray = rgb2gray(normals);
+        I = repmat(gray, [1 1 3]);
+        
+        subplot(mplot, nplot, index_plot);
+        index_plot = index_plot + 1;
+        imagesc(I);
+        axis equal;
+        axis off;        
 
         subplot(mplot, nplot, index_plot);
         index_plot = index_plot + 1;

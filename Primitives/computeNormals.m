@@ -1,4 +1,4 @@
-function [Nx,Ny,Nz,valid] = computeNormals(D, P)
+function [Nx,Ny,Nz,Xd,Yd,Zd, valid] = computeNormals(D, P)
 
 % fx = P(1,1);
 % fy = P(2,2);
