@@ -13,9 +13,9 @@ sbin = 8;
 psize = [4 4];
 pnum = 32;
 threshold = 0.5;
-padding = 16;
+padding = 32;
 
-cls = 'car';
+cls = 'chair';
 index = 2;
 
 filename = sprintf('CAD/%s/%02d.obj', cls, index);
@@ -60,7 +60,9 @@ for azimuth = 0:15:345
     I = repmat(gray, [1 1 3]);
     f = features(double(I), sbin);
     % compute HOG placement
-    pfilters = mkpartfilters(f(:,:,19:27), psize, pnum);
+    % pfilters = mkpartfilters(f(:,:,19:27), psize, pnum);
+    pfilters = mkpartfilters_harris(I, psize, 1000);
+    pnum = numel(pfilters);
     % sort the placement
     energy = zeros(pnum, 1);
     for i = 1:pnum
@@ -99,12 +101,14 @@ for azimuth = 0:15:345
     imagesc(normals);
     hold on;
     for i = 1:pnum
-        if pfilters(i).energy < threshold
-            break;
-        end        
+%         if pfilters(i).energy < threshold
+%             break;
+%         end        
         anchor = pfilters(i).anchor;
-        x = (anchor(1)+2) * sbin + sbin/2;
-        y = (anchor(2)+2) * sbin + sbin/2;
+        x = anchor(1);
+        y = anchor(2);
+%         x = (anchor(1)+2) * sbin + sbin/2;
+%         y = (anchor(2)+2) * sbin + sbin/2;
         plot(x, y, 'bo', 'LineWidth', 2);
         w = psize(1)*sbin;
         h = psize(2)*sbin;
@@ -158,3 +162,39 @@ end
 
 % You must clear the memory before you exit
 renderer.delete(); clear renderer;
+
+
+function pfilters = mkpartfilters_harris(I, psize, threshold)
+
+cim = harris(I, 1);
+[r, c] = find(cim > threshold);
+
+% build the boxes
+num = numel(r);
+bbox = zeros(num, 5);
+w = 32;
+h = 32;
+for i = 1:num
+    x1 = c(i) - w/2;
+    y1 = r(i) - h/2;
+    x2 = c(i) + w/2;
+    y2 = r(i) + h/2;
+    bbox(i,:) = [x1 y1 x2 y2 cim(r(i), c(i))];
+end
+
+index = bbox(:,1) < 0 | bbox(:,3) > size(I,2);
+bbox(index,:) = [];
+
+% non-maximum suppression
+index = nms(bbox, 0.3);
+bbox = bbox(index, :);
+pfilters = [];
+for i = 1:size(bbox,1)
+    x1 = bbox(i,1);
+    y1 = bbox(i,2);
+    x2 = bbox(i,3);
+    y2 = bbox(i,4);
+    energy = bbox(i,5);
+    pfilters(i).anchor = [(x1+x2)/2 (y1+y2)/2 1];
+    pfilters(i).energy = energy;
+end

@@ -3,7 +3,7 @@ function show_cluster_patterns(cid)
 is_save = 0;
 
 % load data
-object = load('normal_patches.mat');
+object = load('normal_patches_chair.mat');
 patches = object.patches;
 object = load('idx.mat');
 idx = object.idx;
@@ -40,13 +40,21 @@ for i = 1:N
     bbox = [x1 y1 x2-x1 y2-y1];
     rectangle('Position', bbox, 'EdgeColor', 'r', 'LineWidth', 2);
     hold off;
+    % show the patch only
+%     pos = strfind(patches(ind).image, '_normal');
+%     filename = sprintf('training_images/%s/%s_image.jpg', patches(ind).cls, patches(ind).image(1:pos-1));
+%     I = imread(filename);
+    patch = I(y1:y2, x1:x2, :);
+    subplot(nplot, mplot, ind_plot);
+    ind_plot = ind_plot + 1;
+    imshow(patch);
     
     % show several members
     member = find(idx == ind);
     member(member == ind) = [];
     num = numel(member);
     fprintf('%d examples\n', num+1);
-    for j = 1:min(nplot*mplot-1, num)
+    for j = 1:min(nplot*mplot/2-1, num)
         ind = member(j);
         subplot(nplot, mplot, ind_plot);
         ind_plot = ind_plot + 1;
@@ -60,7 +68,15 @@ for i = 1:N
         y2 = patches(ind).y2;
         bbox = [x1 y1 x2-x1 y2-y1];
         rectangle('Position', bbox, 'EdgeColor', 'r', 'LineWidth', 2);
-        hold off;          
+        hold off;
+        % show the patch only
+%         pos = strfind(patches(ind).image, '_normal');
+%         filename = sprintf('training_images/%s/%s_image.jpg', patches(ind).cls, patches(ind).image(1:pos-1));
+%         I = imread(filename);        
+        patch = I(y1:y2, x1:x2, :);
+        subplot(nplot, mplot, ind_plot);
+        ind_plot = ind_plot + 1;
+        imshow(patch);        
     end
     
     for j = ind_plot:nplot*mplot

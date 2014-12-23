@@ -271,7 +271,7 @@ MEX_DEFINE(getViewMatrix) (int nlhs, mxArray* plhs[],
 
     for(int row_idx = 0; row_idx < 4; row_idx ++)
       for(int col_idx = 0; col_idx < 4; col_idx ++){
-        mat_raw[row_idx + col_idx * 4] = view_mat(row_idx,col_idx);
+        mat_raw[col_idx + row_idx * 4] = view_mat(row_idx,col_idx);
       }
 	output.set(0,plhs[0]);
 }

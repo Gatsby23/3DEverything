@@ -56,6 +56,10 @@ for c = 1:N
                 [rendering, depth]= renderer.render();
                 rendering = padarray(rendering, [padding padding 0], 255);
                 depth = padarray(depth, [padding padding 0], 1);
+                
+                % compute depth image
+                depths = uint8(255*depth(end:-1:1,:));
+                depths = repmat(depths, [1 1 3]);
 
                 % compute normals
                 P = renderer.getProjectionMatrix();
@@ -71,11 +75,17 @@ for c = 1:N
                 gray = rgb2gray(normals);
                 I = repmat(gray, [1 1 3]);
                 
-                % save gray image and normal image
+                % save gray image
                 filename = sprintf('%s/cad%02d_a%03d_e%02d_image.jpg', outdir, i, a, e);
                 fprintf('%s\n', filename);
                 imwrite(I, filename);
                 
+                % save depth image
+                filename = sprintf('%s/cad%02d_a%03d_e%02d_depth.jpg', outdir, i, a, e);
+                fprintf('%s\n', filename);
+                imwrite(depths, filename);
+                
+                % save normal image
                 filename = sprintf('%s/cad%02d_a%03d_e%02d_normal.jpg', outdir, i, a, e);
                 fprintf('%s\n', filename);
                 imwrite(normals, filename);
