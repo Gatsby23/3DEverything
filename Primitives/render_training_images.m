@@ -5,11 +5,11 @@ addpath('/home/yuxiang/Projects/3DEverything/Render');
 addpath('/home/yuxiang/Projects/3DEverything/Render/bin');
 
 % rendering parameters
-renderingSizeX = 400; 
-renderingSizeY = 400;
+renderingSizeX = 224; 
+renderingSizeY = 224;
 azimuth = 0:15:345;
 elevation = 0:15:90;
-yaw = 0;
+yaw = 0:30:330;
 distance = 0;
 fieldOfView = 25;
 padding = 16;
@@ -19,6 +19,7 @@ fid = fopen('classes.txt', 'r');
 C = textscan(fid, '%s');
 classes = C{1};
 fclose(fid);
+
 N = numel(classes);
 
 % for each class
@@ -50,45 +51,46 @@ for c = 1:N
         % render for each viewpoint
         for a = azimuth
             for e = elevation
-                % rendering
-                renderer.setModelIndex(i);
-                renderer.setViewpoint(360 - a, e, yaw, distance, fieldOfView);
-                [rendering, depth]= renderer.render();
-                rendering = padarray(rendering, [padding padding 0], 255);
-                depth = padarray(depth, [padding padding 0], 1);
-                
-                % compute depth image
-                depths = uint8(255*depth(end:-1:1,:));
-                depths = repmat(depths, [1 1 3]);
+                for y = yaw
+                    % rendering
+                    renderer.setModelIndex(i);
+                    renderer.setViewpoint(360 - a, e, y, distance, fieldOfView);
+                    [rendering, depth]= renderer.render();
+                    rendering = padarray(rendering, [padding padding 0], 255);
+                    depth = padarray(depth, [padding padding 0], 1);
+                    depth = 1 - depth;
 
-                % compute normals
-                P = renderer.getProjectionMatrix();
-                P(1,3) = P(1,3) - padding;
-                P(2,3) = P(2,3) - padding;
-                [Nx, Ny, Nz, Xd, Yd, Zd, valid] = computeNormals(depth(end:-1:1,:), P);
-                normalMap(:,:,1) = Nx;
-                normalMap(:,:,2) = Ny;
-                normalMap(:,:,3) = Nz;
-                normals = visualizeNormal(normalMap, valid);
+                    % compute depth image
+                    depths = uint8(255*depth(end:-1:1,:));
 
-                % compute gray image from normals
-                gray = rgb2gray(normals);
-                I = repmat(gray, [1 1 3]);
-                
-                % save gray image
-                filename = sprintf('%s/cad%02d_a%03d_e%02d_image.jpg', outdir, i, a, e);
-                fprintf('%s\n', filename);
-                imwrite(I, filename);
-                
-                % save depth image
-                filename = sprintf('%s/cad%02d_a%03d_e%02d_depth.jpg', outdir, i, a, e);
-                fprintf('%s\n', filename);
-                imwrite(depths, filename);
-                
-                % save normal image
-                filename = sprintf('%s/cad%02d_a%03d_e%02d_normal.jpg', outdir, i, a, e);
-                fprintf('%s\n', filename);
-                imwrite(normals, filename);
+                    % compute normals
+                    P = renderer.getProjectionMatrix();
+                    P(1,3) = P(1,3) - padding;
+                    P(2,3) = P(2,3) - padding;
+                    [Nx, Ny, Nz, Xd, Yd, Zd, valid] = computeNormals(depth(end:-1:1,:), P);
+                    normalMap(:,:,1) = Nx;
+                    normalMap(:,:,2) = Ny;
+                    normalMap(:,:,3) = Nz;
+                    normals = visualizeNormal(normalMap, valid);
+
+                    % compute gray image from normals
+                    gray = rgb2gray(normals);
+
+                    % save gray image
+                    filename = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_image.jpg', outdir, i, a, e, y);
+                    fprintf('%s\n', filename);
+                    imwrite(gray, filename);
+
+                    % save depth image
+                    filename = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_depth.jpg', outdir, i, a, e, y);
+                    fprintf('%s\n', filename);
+                    imwrite(depths, filename);
+
+                    % save normal image
+%                     filename = sprintf('%s/cad%02d_a%03d_e%02d_normal.jpg', outdir, i, a, e);
+%                     fprintf('%s\n', filename);
+%                     imwrite(normals, filename);
+                end
             end
         end
     end

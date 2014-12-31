@@ -6,7 +6,7 @@ function vis = visualizeNormal(normalMap, validMap, backingImage)
     %Inference-only code
 
     if nargin < 3
-        backingImage = 255*ones(size(normalMap,1),size(normalMap,2),3,'uint8');
+        backingImage = zeros(size(normalMap,1),size(normalMap,2),3,'uint8');
     else
         backingImage = uint8(backingImage/2+128); 
     end
