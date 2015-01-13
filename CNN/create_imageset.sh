@@ -31,7 +31,6 @@ echo "Creating train image lmdb..."
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
-    --shuffle \
     --gray \
     $TRAIN_DATA_ROOT \
     $DATA/train_images.txt \
@@ -42,7 +41,6 @@ echo "Creating train depth lmdb..."
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
-    --shuffle \
     --gray \
     $TRAIN_DATA_ROOT \
     $DATA/train_depths.txt \
@@ -53,7 +51,6 @@ echo "Creating test image lmdb..."
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
-    --shuffle \
     --gray \
     $TRAIN_DATA_ROOT \
     $DATA/test_images.txt \
@@ -64,7 +61,6 @@ echo "Creating test depth lmdb..."
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
-    --shuffle \
     --gray \
     $TRAIN_DATA_ROOT \
     $DATA/test_depths.txt \
