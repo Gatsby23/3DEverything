@@ -1,6 +1,6 @@
 function split_training_images
 
-root_dir = '/home/yuxiang/Projects/3DEverything/Primitives';
+% root_dir = '/home/yuxiang/Projects/3DEverything/Primitives';
 azimuth = 0:15:345;
 elevation = 0:15:90;
 yaw = 0:30:330;
@@ -31,7 +31,7 @@ for c = 1:N
     num_test = max(round(num * per_test), 1);
     num_train = num - num_test;
     
-    outdir = sprintf('%s/training_images/%s', root_dir, cls);
+    outdir = cls;
     
     % for each CAD model
     for i = 1:num
@@ -41,12 +41,14 @@ for c = 1:N
                 for y = yaw
                     filename_image = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_image.jpg', outdir, i, a, e, y);
                     filename_depth = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_depth.jpg', outdir, i, a, e, y);
+                    % add an auxiliary class label to be zero for using
+                    % caffe
                     if i <= num_train
-                        fprintf(fid_train_images, '%s\n', filename_image);
-                        fprintf(fid_train_depths, '%s\n', filename_depth);
+                        fprintf(fid_train_images, '%s %d\n', filename_image, 0);
+                        fprintf(fid_train_depths, '%s %d\n', filename_depth, 0);
                     else
-                        fprintf(fid_test_images, '%s\n', filename_image);
-                        fprintf(fid_test_depths, '%s\n', filename_depth);
+                        fprintf(fid_test_images, '%s %d\n', filename_image, 0);
+                        fprintf(fid_test_depths, '%s %d\n', filename_depth, 0);
                     end
                 end
             end
