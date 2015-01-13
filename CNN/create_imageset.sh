@@ -3,10 +3,10 @@
 # N.B. set the path to the image dir
 
 EXAMPLE=.
-DATA=/home/yuxiang/Projects/3DEverything/Primitives
+DATA=/scratch/yuxiang/Projects/3DEverything/Primitives
 TOOLS=.
 
-TRAIN_DATA_ROOT=/home/yuxiang/Projects/3DEverything/Primitives/training_images/
+TRAIN_DATA_ROOT=/scratch/yuxiang/Projects/3DEverything/Primitives/training_images/
 
 # Set RESIZE=true to resize the images to 256x256. Leave as false if images have
 # already been resized using another tool.

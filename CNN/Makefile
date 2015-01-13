@@ -6,9 +6,9 @@ CUDA_INCLUDES := /usr/local/cuda/include
 ################################################################################
 # Caffe
 ################################################################################
-CAFFE_INCLUDES := /home/yuxiang/Projects/caffe/include
-CAFFE_BUILD_INCLUDES := /home/yuxiang/Projects/caffe/build/src
-CAFFE_LIBS := /home/yuxiang/Projects/caffe/build/lib
+CAFFE_INCLUDES := /opt/caffe-master/include
+CAFFE_BUILD_INCLUDES := /opt/caffe-master/build/src
+CAFFE_LIBS := /opt/caffe-master/build/lib
 
 CC = g++
 LD = g++
