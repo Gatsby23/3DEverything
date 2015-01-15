@@ -20,13 +20,16 @@ INCLUDES += -I$(CAFFE_INCLUDES) -I$(CAFFE_BUILD_INCLUDES) -I$(CUDA_INCLUDES)
 LIBRARIES += -L$(CAFFE_LIBS)
 
 # Target rules
-SRC_C = convert_imageset.cpp
+SRC_C = convert_imageset.cpp caffe.cpp
 
 OBJ_C = $(addsuffix .o, $(basename $(SRC_C)))
 
-all: convert_imageset
+all: convert_imageset caffe
 
-convert_imageset: $(OBJ_C)
+caffe: caffe.o
+	$(CC) -o $@ $+ $(LDFLAGS) $(LIBRARIES) 
+
+convert_imageset: convert_imageset.o 
 	$(CC) -o $@ $+ $(LDFLAGS) $(LIBRARIES) 
 
 %.o: %.cpp
@@ -35,3 +38,4 @@ convert_imageset: $(OBJ_C)
 clean: $(OBJ)
 	rm -f $(OBJ_C)
 	rm -f convert_imageset
+	rm -f caffe

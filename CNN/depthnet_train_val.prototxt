@@ -6,7 +6,7 @@ layers {
   data_param {
     source: "train_images_lmdb"
     backend: LMDB
-    batch_size: 256
+    batch_size: 4
   }
   transform_param {
     mean_file: "imageset_mean.binaryproto"
@@ -20,7 +20,7 @@ layers {
   data_param {
     source: "train_depths_lmdb"
     backend: LMDB
-    batch_size: 256
+    batch_size: 4 
   }
   include: { phase: TRAIN }
 }
@@ -31,7 +31,7 @@ layers {
   data_param {
     source: "test_images_lmdb"
     backend: LMDB
-    batch_size: 50
+    batch_size: 4
   }
   transform_param {
     mean_file: "imageset_mean.binaryproto"
@@ -45,7 +45,7 @@ layers {
   data_param {
     source: "test_depths_lmdb"
     backend: LMDB
-    batch_size: 50
+    batch_size: 4
   }
   include: { phase: TEST }
 }
