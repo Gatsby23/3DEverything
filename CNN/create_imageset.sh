@@ -33,8 +33,8 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_width=$RESIZE_WIDTH \
     --gray \
     $TRAIN_DATA_ROOT \
-    $DATA/train_images.txt \
-    $EXAMPLE/train_images_lmdb
+    $DATA/train_images_few.txt \
+    $EXAMPLE/train_images_few_lmdb
 
 echo "Creating train depth lmdb..."
 
@@ -43,27 +43,27 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_width=$RESIZE_WIDTH \
     --gray \
     $TRAIN_DATA_ROOT \
-    $DATA/train_depths.txt \
-    $EXAMPLE/train_depths_lmdb
+    $DATA/train_depths_few.txt \
+    $EXAMPLE/train_depths_few_lmdb
 
-echo "Creating test image lmdb..."
+#echo "Creating test image lmdb..."
 
-GLOG_logtostderr=1 $TOOLS/convert_imageset \
-    --resize_height=$RESIZE_HEIGHT \
-    --resize_width=$RESIZE_WIDTH \
-    --gray \
-    $TRAIN_DATA_ROOT \
-    $DATA/test_images.txt \
-    $EXAMPLE/test_images_lmdb
+#GLOG_logtostderr=1 $TOOLS/convert_imageset \
+#    --resize_height=$RESIZE_HEIGHT \
+#    --resize_width=$RESIZE_WIDTH \
+#    --gray \
+#    $TRAIN_DATA_ROOT \
+#    $DATA/test_images.txt \
+#    $EXAMPLE/test_images_lmdb
 
-echo "Creating test depth lmdb..."
+#echo "Creating test depth lmdb..."
 
-GLOG_logtostderr=1 $TOOLS/convert_imageset \
-    --resize_height=$RESIZE_HEIGHT \
-    --resize_width=$RESIZE_WIDTH \
-    --gray \
-    $TRAIN_DATA_ROOT \
-    $DATA/test_depths.txt \
-    $EXAMPLE/test_depths_lmdb
+#GLOG_logtostderr=1 $TOOLS/convert_imageset \
+#    --resize_height=$RESIZE_HEIGHT \
+#    --resize_width=$RESIZE_WIDTH \
+#    --gray \
+#    $TRAIN_DATA_ROOT \
+#    $DATA/test_depths.txt \
+#    $EXAMPLE/test_depths_lmdb
 
 echo "Done."

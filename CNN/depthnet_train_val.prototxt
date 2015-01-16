@@ -9,7 +9,7 @@ layers {
     batch_size: 5 
   }
   transform_param {
-    mean_file: "imageset_mean.binaryproto"
+    scale: 0.00390625
   }
   include: { phase: TRAIN }
 }
@@ -37,7 +37,7 @@ layers {
     batch_size: 5
   }
   transform_param {
-    mean_file: "imageset_mean.binaryproto"
+    scale: 0.00390625
   }
   include: { phase: TEST }
 }
@@ -65,13 +65,13 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 32
+    num_output: 16
     pad: 1
     kernel_size: 3
     stride: 1
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
@@ -95,17 +95,17 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 64
+    num_output: 32
     pad: 1
     kernel_size: 3
     stride: 1
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
@@ -125,13 +125,13 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 128
+    num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
@@ -155,17 +155,17 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 256
+    num_output: 128
     pad: 1
     kernel_size: 3
     stride: 1
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
@@ -191,11 +191,11 @@ layers {
     stride: 1
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
