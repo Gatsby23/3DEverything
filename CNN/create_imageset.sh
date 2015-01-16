@@ -10,14 +10,6 @@ TRAIN_DATA_ROOT=/scratch/yuxiang/Projects/3DEverything/Primitives/training_image
 
 # Set RESIZE=true to resize the images to 256x256. Leave as false if images have
 # already been resized using another tool.
-RESIZE=false
-if $RESIZE; then
-  RESIZE_HEIGHT=256
-  RESIZE_WIDTH=256
-else
-  RESIZE_HEIGHT=0
-  RESIZE_WIDTH=0
-fi
 
 if [ ! -d "$TRAIN_DATA_ROOT" ]; then
   echo "Error: TRAIN_DATA_ROOT is not a path to a directory: $TRAIN_DATA_ROOT"
@@ -29,8 +21,8 @@ fi
 echo "Creating train image lmdb..."
 
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
-    --resize_height=$RESIZE_HEIGHT \
-    --resize_width=$RESIZE_WIDTH \
+    --resize_height=227 \
+    --resize_width=227 \
     --gray \
     $TRAIN_DATA_ROOT \
     $DATA/train_images_few.txt \
@@ -39,8 +31,8 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
 echo "Creating train depth lmdb..."
 
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
-    --resize_height=$RESIZE_HEIGHT \
-    --resize_width=$RESIZE_WIDTH \
+    --resize_height=64 \
+    --resize_width=64 \
     --gray \
     $TRAIN_DATA_ROOT \
     $DATA/train_depths_few.txt \
