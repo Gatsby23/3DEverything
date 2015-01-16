@@ -9,7 +9,7 @@ layers {
     batch_size: 256
   }
   transform_param {
-    mean_file: "imageset_mean.binaryproto"
+    mean_file: "imageset_few_mean.binaryproto"
   }
   include: { phase: TRAIN }
 }
@@ -37,7 +37,7 @@ layers {
     batch_size: 50
   }
   transform_param {
-    mean_file: "imageset_mean.binaryproto"
+    mean_file: "imageset_few_mean.binaryproto"
   }
   include: { phase: TEST }
 }
@@ -56,12 +56,18 @@ layers {
   include: { phase: TEST }
 }
 layers {
+  name: "flatten"
+  type: FLATTEN
+  bottom: "depth"
+  top: "depth"
+}
+layers {
   name: "conv1"
   type: CONVOLUTION
   bottom: "data"
   top: "conv1"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -70,7 +76,7 @@ layers {
     stride: 4
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
@@ -111,8 +117,8 @@ layers {
   type: CONVOLUTION
   bottom: "norm1"
   top: "conv2"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -122,11 +128,11 @@ layers {
     group: 2
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0 
     }
   }
 }
@@ -163,8 +169,8 @@ layers {
   type: CONVOLUTION
   bottom: "norm2"
   top: "conv3"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -173,7 +179,7 @@ layers {
     kernel_size: 3
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
@@ -192,8 +198,8 @@ layers {
   type: CONVOLUTION
   bottom: "conv3"
   top: "conv4"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -203,11 +209,11 @@ layers {
     group: 2
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
@@ -222,8 +228,8 @@ layers {
   type: CONVOLUTION
   bottom: "conv4"
   top: "conv5"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -233,11 +239,11 @@ layers {
     group: 2
     weight_filler {
       type: "gaussian"
-      std: 0.01
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
@@ -263,19 +269,19 @@ layers {
   type: INNER_PRODUCT
   bottom: "pool5"
   top: "fc6"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
     num_output: 4096
     weight_filler {
       type: "gaussian"
-      std: 0.005
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
@@ -299,19 +305,19 @@ layers {
   type: INNER_PRODUCT
   bottom: "fc6"
   top: "fc7"
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0.1
+  blobs_lr: 0.2
   weight_decay: 1
   weight_decay: 0
   inner_product_param {
     num_output: 4096
     weight_filler {
       type: "gaussian"
-      std: 0.005
+      std: 0.001
     }
     bias_filler {
       type: "constant"
-      value: 1
+      value: 0
     }
   }
 }
