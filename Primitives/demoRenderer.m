@@ -6,8 +6,8 @@ addpath('/home/yuxiang/Projects/3DEverything/Render/bin');
 
 % Initialize the Matlab object.
 % if you use field of view, set distance to 0
-renderingSizeX = 400; renderingSizeY = 400; % pixels
-elevation = 15; yaw = 0;
+renderingSizeX = 224; renderingSizeY = 224; % pixels
+elevation = 90; yaw = 0;
 distance = 0; fieldOfView = 25;
 
 cls = 'chair';
