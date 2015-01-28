@@ -1,6 +1,6 @@
 function display_correspondences
 
-filename = 'labels_correspondences/aeroplane/000957.mat';
+filename = 'labels_correspondences/aeroplane/002000.mat';
 object = load(filename);
 cor = object.cor;
 corX = cor.corX;

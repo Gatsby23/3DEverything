@@ -44,14 +44,14 @@
 % The actual forward function. It takes in a cell array of 4-D arrays as
 % input and outputs a cell array. 
 
-function matcaffe_demo
+function predict_depth(im)
 
 caffe_path = '/home/yuxiang/Projects/caffe/matlab/caffe';
 addpath(caffe_path);
 
 use_gpu = 1;
 model_def_file = 'depthnet_deploy.prototxt';
-model_file = 'depthnet_train_iter_450000.caffemodel';
+model_file = 'depthnet_train_iter_220000.caffemodel';
 
 % init caffe network (spews logging info)
 matcaffe_init(use_gpu, model_def_file, model_file)
@@ -60,47 +60,25 @@ matcaffe_init(use_gpu, model_def_file, model_file)
 image_mean = caffe('read_mean', 'imageset_mean.binaryproto');
 image_mean = image_mean';
 
-% read test images
-fid_images = fopen('../Primitives/test_images.txt');
-fid_depths = fopen('../Primitives/test_depths.txt');
-C = textscan(fid_images, '%s%d');
-image_names = C{1};
-C = textscan(fid_depths, '%s%d');
-depth_names = C{1};
-fclose(fid_images);
-fclose(fid_depths);
+% prepare oversampled input
+% input_data is Height x Width x Channel x Num
+tic;
+input_data = {prepare_image(im, image_mean)};
+toc;
 
-N = numel(image_names);
-for i = 1:N
-    filename_image = sprintf('../Primitives/training_images/%s', image_names{i});
-    filename_depth = sprintf('../Primitives/training_images/%s', depth_names{i});
+% do forward pass to get scores
+% scores are now Width x Height x Channels x Num
+tic;
+scores = caffe('forward', input_data);
+toc;
 
-    % prepare oversampled input
-    % input_data is Height x Width x Channel x Num
-    tic;
-    im = imread(filename_image);
-    input_data = {prepare_image(im, image_mean)};
-    toc;
+figure(1);
+subplot(1,2,1);
+imshow(im);
 
-    % do forward pass to get scores
-    % scores are now Width x Height x Channels x Num
-    tic;
-    scores = caffe('forward', input_data);
-    toc;
-
-    figure(1);
-    subplot(1,3,1);
-    imshow(im);
-    
-    subplot(1,3,2);
-    depth = imread(filename_depth);
-    imshow(depth);
-
-    subplot(1,3,3);
-    depth = reshape(scores{1}, [64 64]);
-    imshow(uint8(255*depth));
-    pause;
-end
+subplot(1,2,2);
+depth = reshape(scores{1}, [64 64]);
+imshow(uint8(255*depth));
 
 % ------------------------------------------------------------------------
 function images = prepare_image(im, image_mean)
@@ -109,6 +87,10 @@ IMAGE_MEAN = image_mean;
 IMAGE_DIM = 227;
 
 % resize to fixed input size
+if size(im, 3) == 3
+    im = rgb2gray(im);
+end
+%im = 255 - im;
 im = single(im);
 im = imresize(im, [IMAGE_DIM IMAGE_DIM], 'bilinear');
 % permute from RGB to BGR (IMAGE_MEAN is already BGR)

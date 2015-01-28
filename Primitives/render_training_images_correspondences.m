@@ -146,13 +146,13 @@ for c = 1:N
                             % skip self-occluded points
                             if round(p2d(1)) < 1 || round(p2d(1)) > renderingSizeX || ...
                                     round(p2d(2)) < 1 || round(p2d(2)) > renderingSizeY || ...
-                                    p2d(3) > depth2(round(p2d(2)), round(p2d(1))) + 0.001
+                                    p2d(3) > depth2(round(p2d(2)), round(p2d(1))) + 0.1
                                 continue;
                             end
 
                             % corresponding points
-                            loc1 = [x height-y];
-                            loc2 = [p2d(1) height-p2d(2)];
+                            loc1 = [x height-y+1];
+                            loc2 = [p2d(1) height-p2d(2)+1];
 
                             % save correspondences
                             CorrX(loc1(2), loc1(1)) = loc2(1);
@@ -170,6 +170,20 @@ for c = 1:N
                 filename = sprintf('%s/%06d.mat', outdir_cor, num_label);
                 disp(filename);
                 save(filename, 'cor');
+                
+                subplot(2, 2, 1);
+                imagesc(objects(j).image);
+                axis equal;
+                subplot(2, 2, 2);
+                imagesc(objects(k).image);
+                axis equal;
+                subplot(2, 2, 3);
+                imagesc(CorrX);
+                axis equal;
+                subplot(2, 2, 4);
+                imagesc(CorrY);
+                axis equal;
+                pause;
             end
         end
     end
