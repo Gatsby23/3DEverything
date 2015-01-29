@@ -1,0 +1,1 @@
+mex compute_gradient_image.cpp -lopencv_core -lopencv_highgui -lopencv_imgproc
