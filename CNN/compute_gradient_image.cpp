@@ -10,14 +10,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   char* filename = mxArrayToString(prhs[0]);
 
   cv::Mat cv_img;
-  cv::Mat cv_img_origin = cv::imread(filename);
+  cv::Mat cv_img_origin = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
   if (!cv_img_origin.data) 
   {
     printf("Could not open or find file: %s\n", filename);
   }
-  // cv::resize(cv_img_origin, cv_img, cv::Size(227, 227));
-  cv_img = cv_img_origin;
-printf("%s %d %d\n", filename, cv_img.rows, cv_img.cols);
+  cv::resize(cv_img_origin, cv_img, cv::Size(227, 227));
 
   // compute sobel gradient
   /// Generate grad_x and grad_y
@@ -48,7 +46,7 @@ printf("%s %d %d\n", filename, cv_img.rows, cv_img.cols);
   {
     for (int w = 0; w < cv_img.cols; ++w)
     {
-      *p = cv_img.at<uchar>(h, w);
+      *p = cv_img.at<uchar>(w, h);
       p++;
     }
   }
