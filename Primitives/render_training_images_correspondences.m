@@ -170,20 +170,6 @@ for c = 1:N
                 filename = sprintf('%s/%06d.mat', outdir_cor, num_label);
                 disp(filename);
                 save(filename, 'cor');
-                
-                subplot(2, 2, 1);
-                imagesc(objects(j).image);
-                axis equal;
-                subplot(2, 2, 2);
-                imagesc(objects(k).image);
-                axis equal;
-                subplot(2, 2, 3);
-                imagesc(CorrX);
-                axis equal;
-                subplot(2, 2, 4);
-                imagesc(CorrY);
-                axis equal;
-                pause;
             end
         end
     end

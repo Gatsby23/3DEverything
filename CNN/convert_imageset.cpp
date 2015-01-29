@@ -21,6 +21,11 @@
 #include <utility>
 #include <vector>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/io.hpp"
 #include "caffe/util/rng.hpp"
@@ -31,13 +36,96 @@ using std::string;
 
 DEFINE_bool(gray, false,
     "When this option is on, treat images as grayscale ones");
+DEFINE_bool(gradient, false,
+    "When this option is on, compute the gradient of image");
 DEFINE_bool(shuffle, false,
     "Randomly shuffle the order of images and their labels");
 DEFINE_string(backend, "lmdb", "The backend for storing the result");
 DEFINE_int32(resize_width, 0, "Width images are resized to");
 DEFINE_int32(resize_height, 0, "Height images are resized to");
 
-int main(int argc, char** argv) {
+
+bool MyReadImageToDatum(const string& filename, const int label,
+    const int height, const int width, const bool is_color, const bool is_gradient, Datum* datum) 
+{
+  cv::Mat cv_img;
+  int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR : CV_LOAD_IMAGE_GRAYSCALE);
+
+  cv::Mat cv_img_origin = cv::imread(filename, cv_read_flag);
+  if (!cv_img_origin.data) 
+  {
+    LOG(ERROR) << "Could not open or find file " << filename;
+    return false;
+  }
+  if (height > 0 && width > 0) 
+  {
+    cv::resize(cv_img_origin, cv_img, cv::Size(width, height));
+  } else 
+  {
+    cv_img = cv_img_origin;
+  }
+
+  if (is_gradient)
+  {
+    // compute sobel gradient
+    /// Generate grad_x and grad_y
+    cv::Mat grad_x, grad_y, grad;
+    cv::Mat abs_grad_x, abs_grad_y;
+    int scale = 1;
+    int delta = 0;
+    int ddepth = CV_16S;
+
+    /// Gradient X
+    cv::Sobel(cv_img, grad_x, ddepth, 1, 0, 3, scale, delta, cv::BORDER_DEFAULT );
+    cv::convertScaleAbs( grad_x, abs_grad_x );
+
+    /// Gradient Y
+    cv::Sobel(cv_img, grad_y, ddepth, 0, 1, 3, scale, delta, cv::BORDER_DEFAULT );
+    cv::convertScaleAbs( grad_y, abs_grad_y );
+
+    /// Total Gradient (approximate)
+    cv::addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad );
+    cv_img = grad;
+    /// Create window
+    // cv::namedWindow("gradient", CV_WINDOW_AUTOSIZE );
+    // cv::imshow("gradient", grad );
+    // cv::waitKey(0);
+  }
+
+  int num_channels = (is_color ? 3 : 1);
+  if (is_gradient)
+    num_channels = 1;
+
+  datum->set_channels(num_channels);
+  datum->set_height(cv_img.rows);
+  datum->set_width(cv_img.cols);
+  datum->set_label(label);
+  datum->clear_data();
+  datum->clear_float_data();
+  string* datum_string = datum->mutable_data();
+  if (is_color) {
+    for (int c = 0; c < num_channels; ++c) {
+      for (int h = 0; h < cv_img.rows; ++h) {
+        for (int w = 0; w < cv_img.cols; ++w) {
+          datum_string->push_back(
+            static_cast<char>(cv_img.at<cv::Vec3b>(h, w)[c]));
+        }
+      }
+    }
+  } else {  // Faster than repeatedly testing is_color for each pixel w/i loop
+    for (int h = 0; h < cv_img.rows; ++h) {
+      for (int w = 0; w < cv_img.cols; ++w) {
+        datum_string->push_back(
+          static_cast<char>(cv_img.at<uchar>(h, w)));
+        }
+      }
+  }
+  return true;
+}
+
+
+int main(int argc, char** argv) 
+{
   ::google::InitGoogleLogging(argv[0]);
 
 #ifndef GFLAGS_GFLAGS_H_
@@ -58,7 +146,9 @@ int main(int argc, char** argv) {
   }
 
   bool is_color = !FLAGS_gray;
+  bool is_gradient = FLAGS_gradient;
   printf("is_color = %d\n", is_color);
+  printf("is_gradient = %d\n", is_gradient);
 
   std::ifstream infile(argv[2]);
   std::vector<std::pair<string, int> > lines;
@@ -129,8 +219,8 @@ int main(int argc, char** argv) {
   bool data_size_initialized = false;
 
   for (int line_id = 0; line_id < lines.size(); ++line_id) {
-    if (!ReadImageToDatum(root_folder + lines[line_id].first,
-        lines[line_id].second, resize_height, resize_width, is_color, &datum)) {
+    if (!MyReadImageToDatum(root_folder + lines[line_id].first,
+        lines[line_id].second, resize_height, resize_width, is_color, is_gradient, &datum)) {
       continue;
     }
     if (!data_size_initialized) {

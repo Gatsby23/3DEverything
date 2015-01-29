@@ -3,10 +3,12 @@
 # N.B. set the path to the image dir
 
 EXAMPLE=.
-DATA=/scratch/yuxiang/Projects/3DEverything/Primitives
+#DATA=/scratch/yuxiang/Projects/3DEverything/Primitives
+DATA=/home/yuxiang/Projects/3DEverything/Primitives
 TOOLS=.
 
-TRAIN_DATA_ROOT=/scratch/yuxiang/Projects/3DEverything/Primitives/training_images/
+#TRAIN_DATA_ROOT=/scratch/yuxiang/Projects/3DEverything/Primitives/training_images/
+TRAIN_DATA_ROOT=/home/yuxiang/Projects/3DEverything/Primitives/training_images/
 
 # Set RESIZE=true to resize the images to 256x256. Leave as false if images have
 # already been resized using another tool.
@@ -24,8 +26,9 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=227 \
     --resize_width=227 \
     --gray \
+    --gradient \
     $TRAIN_DATA_ROOT \
-    $DATA/train_images.txt \
+    $DATA/train_images_few.txt \
     $EXAMPLE/train_images_lmdb
 
 echo "Creating train depth lmdb..."
@@ -35,27 +38,28 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_width=64 \
     --gray \
     $TRAIN_DATA_ROOT \
-    $DATA/train_depths.txt \
+    $DATA/train_depths_few.txt \
     $EXAMPLE/train_depths_lmdb
 
-echo "Creating test image lmdb..."
+#echo "Creating test image lmdb..."
 
-GLOG_logtostderr=1 $TOOLS/convert_imageset \
-    --resize_height=227 \
-    --resize_width=227 \
-    --gray \
-    $TRAIN_DATA_ROOT \
-    $DATA/test_images.txt \
-    $EXAMPLE/test_images_lmdb
+#GLOG_logtostderr=1 $TOOLS/convert_imageset \
+#    --resize_height=227 \
+#    --resize_width=227 \
+#    --gray \
+#    --gradient \
+#    $TRAIN_DATA_ROOT \
+#    $DATA/test_images.txt \
+#    $EXAMPLE/test_images_lmdb
 
-echo "Creating test depth lmdb..."
+#echo "Creating test depth lmdb..."
 
-GLOG_logtostderr=1 $TOOLS/convert_imageset \
-    --resize_height=64 \
-    --resize_width=64 \
-    --gray \
-    $TRAIN_DATA_ROOT \
-    $DATA/test_depths.txt \
-    $EXAMPLE/test_depths_lmdb
+#GLOG_logtostderr=1 $TOOLS/convert_imageset \
+#    --resize_height=64 \
+#    --resize_width=64 \
+#    --gray \
+#    $TRAIN_DATA_ROOT \
+#    $DATA/test_depths.txt \
+#    $EXAMPLE/test_depths_lmdb
 
 echo "Done."
