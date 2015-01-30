@@ -10,7 +10,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   char* filename = mxArrayToString(prhs[0]);
 
   cv::Mat cv_img;
-  cv::Mat cv_img_origin = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+  cv::Mat cv_img_origin = cv::imread(filename);
+  cv::cvtColor( cv_img_origin, cv_img_origin, CV_RGB2GRAY );
   if (!cv_img_origin.data) 
   {
     printf("Could not open or find file: %s\n", filename);

@@ -51,7 +51,7 @@ addpath(caffe_path);
 
 use_gpu = 1;
 model_def_file = 'depthnet_deploy.prototxt';
-model_file = 'depthnet_train_iter_450000.caffemodel';
+model_file = 'depthnet_train_iter_20000.caffemodel';
 
 % init caffe network (spews logging info)
 matcaffe_init(use_gpu, model_def_file, model_file)
@@ -79,7 +79,7 @@ for i = 1:N
     % input_data is Height x Width x Channel x Num
     tic;
     im = imread(filename_image);
-    input_data = {prepare_image(im, image_mean)};
+    input_data = {prepare_image(filename_image, image_mean)};
     toc;
 
     % do forward pass to get scores
@@ -103,17 +103,22 @@ for i = 1:N
 end
 
 % ------------------------------------------------------------------------
-function images = prepare_image(im, image_mean)
+function images = prepare_image(filename, image_mean)
 % ------------------------------------------------------------------------
 IMAGE_MEAN = image_mean;
-IMAGE_DIM = 227;
-
-% resize to fixed input size
-im = single(im);
-im = imresize(im, [IMAGE_DIM IMAGE_DIM], 'bilinear');
+% IMAGE_DIM = 227;
+% 
+% % resize to fixed input size
+% if size(im, 3) == 3
+%     im = rgb2gray(im);
+% end
+% %im = 255 - im;
+% im = single(im);
+% im = imresize(im, [IMAGE_DIM IMAGE_DIM], 'bilinear');
 % permute from RGB to BGR (IMAGE_MEAN is already BGR)
-im = im - IMAGE_MEAN;
+im = compute_gradient_image(filename);
+im = single(im) - IMAGE_MEAN;
 
 % oversample (4 corners, center, and their x-axis flips)
-images = zeros(IMAGE_DIM, IMAGE_DIM, 1, 1, 'single');
+% images = zeros(IMAGE_DIM, IMAGE_DIM, 1, 1, 'single');
 images(:,:,:,1) = im;

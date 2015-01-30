@@ -40,7 +40,7 @@ for c = 1:N
     end    
     
     % output dir
-    outdir = sprintf('training_images_correspondences/%s', cls);
+    outdir = sprintf('training_mats_correspondences/%s', cls);
     if exist(outdir, 'dir') == 0
         mkdir(outdir);
     end
@@ -76,102 +76,107 @@ for c = 1:N
 
                     % compute gray image from normals
                     gray = rgb2gray(normals);
+                    mask = gray > 0;
                     
-                    % backproject to 3D
-                    [X, Y, Z] = renderer.unprojDepth(depth);                    
-
-                    % save gray image
-                    filename = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_image.jpg', outdir, i, a, e, y);
+                    filename = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_image.mat', outdir, i, a, e, y);
                     fprintf('%s\n', filename);
-                    imwrite(gray, filename);
-
-                    % build the object structure
-                    count = count + 1;
-                    objects(count).filename = filename;
-                    objects(count).azimuth = a;
-                    objects(count).elevation = e;
-                    objects(count).yaw = y;
-                    objects(count).image = gray;
-                    objects(count).depth = depth;
-                    objects(count).P = P;
-                    objects(count).R = R;
-                    objects(count).X = X;
-                    objects(count).Y = Y;
-                    objects(count).Z = Z;
+                    save(filename, 'gray', 'mask');
+                    
+%                     % backproject to 3D
+%                     [X, Y, Z] = renderer.unprojDepth(depth);                    
+% 
+%                     % save gray image
+%                     filename = sprintf('%s/cad%02d_a%03d_e%02d_y%03d_image.jpg', outdir, i, a, e, y);
+%                     fprintf('%s\n', filename);
+%                     imwrite(gray, filename);
+% 
+%                     % build the object structure
+%                     count = count + 1;
+%                     objects(count).filename = filename;
+%                     objects(count).azimuth = a;
+%                     objects(count).elevation = e;
+%                     objects(count).yaw = y;
+%                     objects(count).image = gray;
+%                     objects(count).depth = depth;
+%                     objects(count).P = P;
+%                     objects(count).R = R;
+%                     objects(count).X = X;
+%                     objects(count).Y = Y;
+%                     objects(count).Z = Z;
                 end
             end
         end
         
-        % find the correspondences
-        for j = 1:count
-            for k = 1:count
-                % only consider the same elevation for now
-                if j == k || objects(j).elevation ~= objects(k).elevation
-                    continue;
-                end
-                azimuth1 = objects(j).azimuth;
-                azimuth2 = objects(k).azimuth;
-                amax = max(azimuth1, azimuth2);
-                amin = min(azimuth1, azimuth2);
-                diff = min(amax - amin, 360 - amax + amin);
-                % only consider azimuth difference < 30
-                if diff > 30
-                    continue;
-                end
-                
-                % compute the correspondences
-                I = objects(j).image;
-                depth = objects(j).depth;
-                X = objects(j).X;
-                Y = objects(j).Y;
-                Z = objects(j).Z;
-                
-                P2 = objects(k).P;
-                R2 = objects(k).R;
-                depth2 = objects(k).depth;
-                
-                width = size(I, 2);
-                height = size(I, 1);
-                CorrX = zeros(height, width);
-                CorrY = zeros(height, width);
-                for x = 1:width
-                    for y = 1:height
-                        if depth(y,x) > 0 && depth(y,x) < 1
-                            % find the 3D point
-                            p3d = [X(y,x); Y(y,x); Z(y,x); 1];
-                            % projection
-                            p2d = P2 * R2 * p3d;
-                            p2d = p2d ./ p2d(4);
-
-                            % skip self-occluded points
-                            if round(p2d(1)) < 1 || round(p2d(1)) > renderingSizeX || ...
-                                    round(p2d(2)) < 1 || round(p2d(2)) > renderingSizeY || ...
-                                    p2d(3) > depth2(round(p2d(2)), round(p2d(1))) + 0.1
-                                continue;
-                            end
-
-                            % corresponding points
-                            loc1 = [x height-y+1];
-                            loc2 = [p2d(1) height-p2d(2)+1];
-
-                            % save correspondences
-                            CorrX(loc1(2), loc1(1)) = loc2(1);
-                            CorrY(loc1(2), loc1(1)) = loc2(2);
-                        end
-                    end
-                end                
-                
-                % save the correspondences
-                cor.image_left = objects(j).filename;
-                cor.image_right = objects(k).filename;
-                cor.corX = CorrX;
-                cor.corY = CorrY;
-                num_label = num_label + 1;
-                filename = sprintf('%s/%06d.mat', outdir_cor, num_label);
-                disp(filename);
-                save(filename, 'cor');
-            end
-        end
+%         % find the correspondences
+%         for j = 1:count
+%             for k = 1:count
+%                 % only consider the same elevation for now
+%                 if j == k || objects(j).elevation ~= objects(k).elevation
+%                     continue;
+%                 end
+%                 azimuth1 = objects(j).azimuth;
+%                 azimuth2 = objects(k).azimuth;
+%                 amax = max(azimuth1, azimuth2);
+%                 amin = min(azimuth1, azimuth2);
+%                 diff = min(amax - amin, 360 - amax + amin);
+%                 % only consider azimuth difference < 30
+%                 if diff > 30
+%                     continue;
+%                 end
+%                 
+%                 % compute the correspondences
+%                 I = objects(j).image;
+%                 depth = objects(j).depth;
+%                 X = objects(j).X;
+%                 Y = objects(j).Y;
+%                 Z = objects(j).Z;
+%                 
+%                 P2 = objects(k).P;
+%                 R2 = objects(k).R;
+%                 depth2 = objects(k).depth;
+%                 
+%                 width = size(I, 2);
+%                 height = size(I, 1);
+%                 CorrX = zeros(height, width);
+%                 CorrY = zeros(height, width);
+%                 for x = 1:width
+%                     for y = 1:height
+%                         if depth(y,x) > 0 && depth(y,x) < 1
+%                             % find the 3D point
+%                             p3d = [X(y,x); Y(y,x); Z(y,x); 1];
+%                             % projection
+%                             p2d = P2 * R2 * p3d;
+%                             p2d = p2d ./ p2d(4);
+% 
+%                             % skip self-occluded points
+%                             if round(p2d(1)) < 1 || round(p2d(1)) > renderingSizeX || ...
+%                                     round(p2d(2)) < 1 || round(p2d(2)) > renderingSizeY || ...
+%                                     p2d(3) > depth2(round(p2d(2)), round(p2d(1))) + 0.1
+%                                 continue;
+%                             end
+% 
+%                             % corresponding points
+%                             loc1 = [x height-y+1];
+%                             loc2 = [p2d(1) height-p2d(2)+1];
+% 
+%                             % save correspondences
+%                             CorrX(loc1(2), loc1(1)) = loc2(1);
+%                             CorrY(loc1(2), loc1(1)) = loc2(2);
+%                         end
+%                     end
+%                 end                
+%                 
+%                 % save the correspondences
+%                 cor.image_left = objects(j).filename;
+%                 cor.image_right = objects(k).filename;
+%                 cor.corX = CorrX;
+%                 cor.corY = CorrY;
+%                 num_label = num_label + 1;
+%                 filename = sprintf('%s/%06d.mat', outdir_cor, num_label);
+%                 disp(filename);
+%                 save(filename, 'cor');
+%             end
+%         end
     end
     renderer.delete();
     clear renderer;

@@ -44,14 +44,19 @@
 % The actual forward function. It takes in a cell array of 4-D arrays as
 % input and outputs a cell array. 
 
-function predict_depth(im)
+function predict_depth
+
+% input
+% filename = '../Primitives/training_images/car/cad01_a000_e15_y000_image.jpg';
+filename = '../Images/chair/111182689872_0.JPG';
+im = imread(filename);
 
 caffe_path = '/home/yuxiang/Projects/caffe/matlab/caffe';
 addpath(caffe_path);
 
 use_gpu = 1;
 model_def_file = 'depthnet_deploy.prototxt';
-model_file = 'depthnet_train_iter_220000.caffemodel';
+model_file = 'depthnet_train_iter_20000.caffemodel';
 
 % init caffe network (spews logging info)
 matcaffe_init(use_gpu, model_def_file, model_file)
@@ -63,7 +68,7 @@ image_mean = image_mean';
 % prepare oversampled input
 % input_data is Height x Width x Channel x Num
 tic;
-input_data = {prepare_image(im, image_mean)};
+input_data = {prepare_image(filename, image_mean)};
 toc;
 
 % do forward pass to get scores
@@ -73,29 +78,34 @@ scores = caffe('forward', input_data);
 toc;
 
 figure(1);
-subplot(1,2,1);
+subplot(1,3,1);
 imshow(im);
 
-subplot(1,2,2);
+subplot(1,3,2);
+imagesc(input_data{1});
+axis equal off;
+
+subplot(1,3,3);
 depth = reshape(scores{1}, [64 64]);
 imshow(uint8(255*depth));
 
 % ------------------------------------------------------------------------
-function images = prepare_image(im, image_mean)
+function images = prepare_image(filename, image_mean)
 % ------------------------------------------------------------------------
 IMAGE_MEAN = image_mean;
-IMAGE_DIM = 227;
-
-% resize to fixed input size
-if size(im, 3) == 3
-    im = rgb2gray(im);
-end
-%im = 255 - im;
-im = single(im);
-im = imresize(im, [IMAGE_DIM IMAGE_DIM], 'bilinear');
+% IMAGE_DIM = 227;
+% 
+% % resize to fixed input size
+% if size(im, 3) == 3
+%     im = rgb2gray(im);
+% end
+% %im = 255 - im;
+% im = single(im);
+% im = imresize(im, [IMAGE_DIM IMAGE_DIM], 'bilinear');
 % permute from RGB to BGR (IMAGE_MEAN is already BGR)
-im = im - IMAGE_MEAN;
+im = compute_gradient_image(filename);
+im = single(im) - IMAGE_MEAN;
 
 % oversample (4 corners, center, and their x-axis flips)
-images = zeros(IMAGE_DIM, IMAGE_DIM, 1, 1, 'single');
+% images = zeros(IMAGE_DIM, IMAGE_DIM, 1, 1, 'single');
 images(:,:,:,1) = im;
